@@ -39,15 +39,16 @@ namespace WaterBucket
                 DragMove();
             }
         }
-        private void CalculateRainTimer()
+        private async void CalculateRainTimer()
         {
             DateTime now = DateTime.Now;
-            DateTime next = new DateTime(now.Year,now.Month,now.Day,now.Hour,now.Minute >= 27 && now.Minute <= 57 ? 58 : 28, now.Second);
+            DateTime next = new DateTime(now.Year,now.Month,now.Day, now.Minute < 58 ? now.Hour:now.Hour+1,now.Minute >= 28 && now.Minute <= 59 ? 58 : 28, now.Second);
+            //MessageBox.Show(next.ToString());
             TimeSpan delay = (next - remind_time) - now;
             //MessageBox.Show(delay.ToString());
             source = new CancellationTokenSource();
             tracking = true;
-            Task task = Task.Delay(delay, source.Token).ContinueWith(_ =>
+            Task task = Task.Delay(delay, source.Token).ContinueWith(delegate
             {
                 if (tracking)
                 {
@@ -56,14 +57,14 @@ namespace WaterBucket
                     player.Play();
                     Process.Start(new ProcessStartInfo
                     {
-                        FileName = "https:rustclash.com/cases",
+                        FileName = "https://rustclash.com/cases",
                         UseShellExecute = true
                     });
-                    tracking = false;
-                    CalculateRainTimer();
                     return;
                 }
             });
+            await task;
+            if (tracking) CalculateRainTimer();
         }
         private void startButton_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -73,8 +74,8 @@ namespace WaterBucket
                 startButton_Text.Text = "Stop Collecting!";
             } else
             {
-                source.Cancel();
                 tracking = false;
+                source.Cancel();
                 startButton_Text.Text = "Start Collecting!";
             }
         }
