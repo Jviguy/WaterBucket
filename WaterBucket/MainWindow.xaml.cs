@@ -42,7 +42,7 @@ namespace WaterBucket
         private async void CalculateRainTimer()
         {
             DateTime now = DateTime.Now;
-            DateTime next = new DateTime(now.Year,now.Month,now.Day, now.Minute < 58 ? now.Hour:now.Hour+1,now.Minute >= 28 && now.Minute <= 59 ? 58 : 28, now.Second);
+            DateTime next = new DateTime(now.Year,now.Month,now.Day, (now.Minute < 57 ? now.Hour:now.Hour+1),now.Minute >= 27 && now.Minute < 57 ? 58 : 28, now.Second);
             //MessageBox.Show(next.ToString());
             TimeSpan delay = (next - remind_time) - now;
             //MessageBox.Show(delay.ToString());
